@@ -29,26 +29,12 @@ body{
 }
 @keyframes typing{from{width:0}to{width:100%}}
 @keyframes blink{50%{border-color:transparent}}
-
-#playBtn{
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    padding:10px 15px;
-    background:#ff4081;
-    color:white;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    z-index:20;
-}
 </style>
 </head>
 <body>
 
-<button id="playBtn" onclick="playMusic()">▶ Play Music</button>
-
-<audio id="bgm" loop>
+<!-- Auto Play Romantic Music -->
+<audio id="bgm" autoplay loop>
 <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg">
 </audio>
 
@@ -56,13 +42,8 @@ body{
 <canvas id="canvas"></canvas>
 
 <script>
-function playMusic(){
- document.getElementById("bgm").play();
- document.getElementById("playBtn").style.display="none";
-}
-
 // Name from URL
-const params=new URLSearchParams(window.location.search);
+const params=new URLSearchParams(location.search);
 const name=params.get("name")||"Special One";
 
 // Canvas setup
@@ -71,7 +52,7 @@ const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
 canvas.height=innerHeight;
 
-// Tree
+// Draw tree (permanent)
 function drawTree(x,y,len,angle,w){
  ctx.beginPath();
  ctx.save();
@@ -93,6 +74,7 @@ function drawTree(x,y,len,angle,w){
  ctx.restore();
 }
 
+// Animate tree growth
 let grow=0;
 function animateTree(){
  if(grow<120){
@@ -101,6 +83,8 @@ function animateTree(){
   grow++;
   requestAnimationFrame(animateTree);
  }else{
+  // draw final tree once & keep it
+  drawTree(canvas.width/2+80,canvas.height-40,120,0,5);
   startTyping();
   fireworks();
  }
@@ -129,11 +113,11 @@ function startTyping(){
  });
 }
 
-// Fireworks
+// Fireworks (tree থাকবে, শুধু overlay)
 let particles=[];
 function fireworks(){
  setInterval(()=>{
-  for(let i=0;i<30;i++){
+  for(let i=0;i<25;i++){
    particles.push({
     x:Math.random()*canvas.width,
     y:Math.random()*canvas.height/2,
@@ -146,8 +130,13 @@ function fireworks(){
  },1200);
 
  function animate(){
+  // transparent overlay so tree stays visible
   ctx.fillStyle="rgba(0,0,0,0.15)";
   ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // redraw tree every frame
+  drawTree(canvas.width/2+80,canvas.height-40,120,0,5);
+
   particles.forEach((p,i)=>{
    ctx.fillStyle=`hsl(${Math.random()*360},100%,60%)`;
    ctx.beginPath();
