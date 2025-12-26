@@ -1,157 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Happy Birthday ❤️</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body{
-    background:#000;
-    color:#fff;
-    font-family:'Courier New',monospace;
-    margin:0;
-    overflow:hidden;
-}
-#canvas{position:absolute;}
-#message-container{
-    position:absolute;
-    left:20px;
-    top:18%;
-    z-index:10;
-}
-.text{
-    font-size:18px;
-    border-right:2px solid #fff;
-    white-space:nowrap;
-    overflow:hidden;
-    width:0;
-    margin-bottom:10px;
-}
-@keyframes typing{from{width:0}to{width:100%}}
-@keyframes blink{50%{border-color:transparent}}
-</style>
+    <meta charset="UTF-8">
+    <title>Happy Birthday ❤️</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #000;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #canvas {
+            position: absolute;
+        }
+
+        #message-container {
+            position: absolute;
+            left: 40px;
+            top: 20%;
+            z-index: 10;
+        }
+
+        .text {
+            font-size: 20px;
+            border-right: 2px solid #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+            margin-bottom: 10px;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent }
+        }
+
+        #playBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 16px;
+            background: #ff4081;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 20;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 
-<!-- Auto Play Romantic Music -->
-<audio id="bgm" autoplay loop>
-<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg">
-</audio>
+    <!-- Play Music Button -->
+    <button id="playBtn" onclick="playMusic()">▶ Play Music</button>
 
-<div id="message-container"></div>
-<canvas id="canvas"></canvas>
+    <!-- Romantic Background Music -->
+    <audio id="bgm" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg">
+    </audio>
 
-<script>
-// Name from URL
-const params=new URLSearchParams(location.search);
-const name=params.get("name")||"Special One";
+    <div id="message-container"></div>
+    <canvas id="canvas"></canvas>
 
-// Canvas setup
-const canvas=document.getElementById("canvas");
-const ctx=canvas.getContext("2d");
-canvas.width=innerWidth;
-canvas.height=innerHeight;
+    <script>
+        function playMusic() {
+            document.getElementById('bgm').play();
+            document.getElementById('playBtn').style.display = 'none';
+        }
 
-// Draw tree (permanent)
-function drawTree(x,y,len,angle,w){
- ctx.beginPath();
- ctx.save();
- ctx.strokeStyle="#4d2600";
- ctx.lineWidth=w;
- ctx.translate(x,y);
- ctx.rotate(angle*Math.PI/180);
- ctx.moveTo(0,0);
- ctx.lineTo(0,-len);
- ctx.stroke();
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
- if(len<10){
-  ctx.font="16px Arial";
-  ctx.fillText("❤️",0,-len);
-  ctx.restore();return;
- }
- drawTree(0,-len,len*0.75,angle-20,w*0.7);
- drawTree(0,-len,len*0.75,angle+20,w*0.7);
- ctx.restore();
-}
+        function drawTree(x, y, len, angle, branchWidth) {
+            ctx.beginPath();
+            ctx.save();
+            ctx.strokeStyle = "#4d2600";
+            ctx.lineWidth = branchWidth;
+            ctx.translate(x, y);
+            ctx.rotate(angle * Math.PI / 180);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -len);
+            ctx.stroke();
 
-// Animate tree growth
-let grow=0;
-function animateTree(){
- if(grow<120){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  drawTree(canvas.width/2+80,canvas.height-40,grow,0,5);
-  grow++;
-  requestAnimationFrame(animateTree);
- }else{
-  // draw final tree once & keep it
-  drawTree(canvas.width/2+80,canvas.height-40,120,0,5);
-  startTyping();
-  fireworks();
- }
-}
+            if (len < 10) {
+                ctx.font = "16px Arial";
+                ctx.fillText("❤️", 0, -len);
+                ctx.restore();
+                return;
+            }
 
-// Typing messages
-const messages=[
- `Hey ${name} 💕`,
- "Happy Birthday 🎂",
- "May Allah bless you 😇",
- "You make my world brighter ✨",
- "Just saying... I care about you ❤️",
- "Hope your day is as beautiful as you 💖"
-];
+            drawTree(0, -len, len * 0.75, angle - 20, branchWidth * 0.7);
+            drawTree(0, -len, len * 0.75, angle + 20, branchWidth * 0.7);
+            ctx.restore();
+        }
 
-function startTyping(){
- const box=document.getElementById("message-container");
- messages.forEach((m,i)=>{
-  setTimeout(()=>{
-   const d=document.createElement("div");
-   d.className="text";
-   d.innerText=m;
-   d.style.animation="typing 2s steps(30,end) forwards, blink .5s step-end infinite";
-   box.appendChild(d);
-  },i*2500);
- });
-}
+        let currentLen = 0;
+        function animateTree() {
+            if (currentLen < 120) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawTree(canvas.width / 2 + 100, canvas.height - 50, currentLen, 0, 5);
+                currentLen++;
+                requestAnimationFrame(animateTree);
+            } else {
+                startTyping();
+            }
+        }
 
-// Fireworks (tree থাকবে, শুধু overlay)
-let particles=[];
-function fireworks(){
- setInterval(()=>{
-  for(let i=0;i<25;i++){
-   particles.push({
-    x:Math.random()*canvas.width,
-    y:Math.random()*canvas.height/2,
-    r:Math.random()*2+1,
-    dx:(Math.random()-.5)*4,
-    dy:(Math.random()-.5)*4,
-    life:60
-   });
-  }
- },1200);
+        const messages = [
+            "Hey My সুহাসিনী 💕",
+            "Happy Birthday 🎂",
+            "May Allah bless you 😇",
+            "You make my life more beautiful ✨",
+            "Just saying... I care about you and love you❤️",
+            "and miss u a lot"
+            "Hope your day is as special as you 💖"
+        "and Always be happy and hold my hand as the 1st day till forever"
+        ];
 
- function animate(){
-  // transparent overlay so tree stays visible
-  ctx.fillStyle="rgba(0,0,0,0.15)";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
+        function startTyping() {
+            const container = document.getElementById('message-container');
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    const div = document.createElement('div');
+                    div.className = 'text';
+                    div.innerText = msg;
+                    div.style.animation =
+                        "typing 2s steps(30,end) forwards, blink 0.5s step-end infinite";
+                    container.appendChild(div);
+                }, index * 2500);
+            });
+        }
 
-  // redraw tree every frame
-  drawTree(canvas.width/2+80,canvas.height-40,120,0,5);
+        animateTree();
 
-  particles.forEach((p,i)=>{
-   ctx.fillStyle=`hsl(${Math.random()*360},100%,60%)`;
-   ctx.beginPath();
-   ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-   ctx.fill();
-   p.x+=p.dx;p.y+=p.dy;p.life--;
-   if(p.life<=0)particles.splice(i,1);
-  });
-  requestAnimationFrame(animate);
- }
- animate();
-}
-
-animateTree();
-onresize=()=>{canvas.width=innerWidth;canvas.height=innerHeight;}
-</script>
+        window.onresize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+    </script>
 </body>
 </html>
