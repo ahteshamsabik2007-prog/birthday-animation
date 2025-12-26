@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Happy Birthday!</title>
+    <style>
+        body {
+            background-color: #000;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #canvas { position: absolute; }
+        #message-container {
+            position: absolute;
+            left: 50px;
+            top: 20%;
+            z-index: 10;
+        }
+        .text {
+            font-size: 20px;
+            border-right: 2px solid #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+            margin-bottom: 10px;
+        }
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        @keyframes blink {
+            50% { border-color: transparent }
+        }
+    </style>
+</head>
+<body>
+    <div id="message-container"></div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function drawTree(x, y, len, angle, branchWidth) {
+            ctx.beginPath();
+            ctx.save();
+            ctx.strokeStyle = "#4d2600";
+            ctx.lineWidth = branchWidth;
+            ctx.translate(x, y);
+            ctx.rotate(angle * Math.PI / 180);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -len);
+            ctx.stroke();
+
+            if (len < 10) {
+                ctx.font = "16px Arial";
+                ctx.fillText("❤️", 0, -len);
+                ctx.restore();
+                return;
+            }
+
+            drawTree(0, -len, len * 0.75, angle - 20, branchWidth * 0.7);
+            drawTree(0, -len, len * 0.75, angle + 20, branchWidth * 0.7);
+            ctx.restore();
+        }
+
+        let currentLen = 0;
+        function animateTree() {
+            if (currentLen < 120) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawTree(canvas.width / 2 + 100, canvas.height - 50, currentLen, 0, 5);
+                currentLen++;
+                requestAnimationFrame(animateTree);
+            } else {
+                startTyping();
+            }
+        }
+
+        const messages = [
+            "Hey you 💕",
+            "Happy Birthday! 🎂",
+            "May God bless you 😇",
+            "And give you many happiness ✨",
+            "Just saying... you're pretty awesome 😎",
+            "Hope u have a great day ❤️"
+        ];
+
+        function startTyping() {
+            const container = document.getElementById('message-container');
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    const div = document.createElement('div');
+                    div.className = 'text';
+                    div.innerText = msg;
+                    div.style.animation =
+                        `typing 2s steps(30,end) forwards, blink 0.5s step-end infinite`;
+                    container.appendChild(div);
+                }, index * 2500);
+            });
+        }
+
+        animateTree();
+    </script>
+</body>
+</html>
